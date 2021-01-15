@@ -1,7 +1,7 @@
 {
   "name": "devp2p-vap",
   "namespace": "vaporyjs",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "A javascript libary implementing the Vapory subprotocol over RLPx",
   "main": "index.js",
   "scripts": {
