@@ -1,7 +1,8 @@
 {
-  "name": "devp2p-eth",
+  "name": "devp2p-vap",
+  "namespace": "vaporyjs",
   "version": "0.0.0",
-  "description": "A javascript libary implementing the Ethereum subprotocol over RLPx",
+  "description": "A javascript libary implementing the Vapory subprotocol over RLPx",
   "main": "index.js",
   "scripts": {
     "test": " tape ./test/*.js",
@@ -12,30 +13,30 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ethereumjs/node-devp2p-eth.git"
+    "url": "https://github.com/vaporyjs/node-devp2p-vap.git"
   },
   "keywords": [
-    "ethereum",
+    "vapory",
     "p2p",
     "networking"
   ],
   "author": "mjbecze",
   "license": "MPL-2.0",
   "bugs": {
-    "url": "https://github.com/ethereumjs/node-devp2p-eth/issues"
+    "url": "https://github.com/vaporyjs/node-devp2p-vap/issues"
   },
-  "homepage": "https://github.com/ethereumjs/node-devp2p-eth",
+  "homepage": "https://github.com/vaporyjs/node-devp2p-vap",
   "dependencies": {
     "async": "^1.4.2",
-    "ethereumjs-block": "^1.2.0",
-    "ethereumjs-tx": "^0.6.10",
-    "ethereumjs-util": "^2.5.0"
+    "vaporyjs-block": "^1.7.1",
+    "vaporyjs-tx": "^1.3.3",
+    "vaporyjs-util": "^5.1.5"
   },
   "devDependencies": {
     "coveralls": "^2.11.6",
     "documentation": "^3.0.4",
     "istanbul": "^0.4.1",
-    "levelup": "^1.2.1",
+    "levelup": "^4.4.0",
     "memdown": "^1.0.0",
     "mocha": "^2.1.0",
     "standard": "^5.4.1",

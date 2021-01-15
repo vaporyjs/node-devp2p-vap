@@ -1,9 +1,9 @@
 const util = require('util')
 const EventEmitter = require('events').EventEmitter
-const Transaction = require('ethereumjs-tx')
-const Block = require('ethereumjs-block')
-const ethUtil = require('ethereumjs-util')
-const rlp = ethUtil.rlp
+const Transaction = require('vaporyjs-tx')
+const Block = require('vaporyjs-block')
+const vapUtil = require('vaporyjs-util')
+const rlp = vapUtil.rlp
 
 const OFFSET = 0x10
 const TYPES = {
@@ -30,7 +30,7 @@ const OFFSETS = {
   'blockHashesFromNumber': 0x8
 }
 
-var EthWire = module.exports = function (stream) {
+var VapWire = module.exports = function (stream) {
   // Register as event emitter
   EventEmitter.call(this)
   var self = this
@@ -50,7 +50,7 @@ var EthWire = module.exports = function (stream) {
   })
 }
 
-util.inherits(EthWire, EventEmitter)
+util.inherits(VapWire, EventEmitter)
 
 // parses an array of transactions
 function parseTxs (payload) {
@@ -74,7 +74,7 @@ function parseBlocks (payload) {
 var parsingFunc = {
   status: function (payload) {
     return {
-      ethVersion: payload[0][0],
+      vapVersion: payload[0][0],
       networkID: payload[1],
       td: payload[2],
       bestHash: payload[3],
@@ -116,7 +116,7 @@ var parsingFunc = {
   }
 }
 
-EthWire.prototype.parse = function (data) {
+VapWire.prototype.parse = function (data) {
   var type = TYPES[data.slice(0, 1)[0] - OFFSET]
   // try{
   console.log('recieved: ' + type)
@@ -131,14 +131,14 @@ EthWire.prototype.parse = function (data) {
 // }
 }
 
-EthWire.prototype.send = function (type, data, cb) {
+VapWire.prototype.send = function (type, data, cb) {
   var msg = Buffer.concat([new Buffer([type + 16]), rlp.encode(data)])
   // console.log(msg.toString('hex'))
   this.stream.write(msg, cb)
 }
 
 // packet sending methods
-EthWire.prototype.sendStatus = function (id, td, bestHash, genesisHash, cb) {
+VapWire.prototype.sendStatus = function (id, td, bestHash, genesisHash, cb) {
   var msg = [
     new Buffer([this.version]),
     id,
@@ -157,7 +157,7 @@ EthWire.prototype.sendStatus = function (id, td, bestHash, genesisHash, cb) {
  * @param {Array.<Transaction>} transaction
  * @param {Function} cb
  */
-EthWire.prototype.sendTransactions = function (transactions, cb) {
+VapWire.prototype.sendTransactions = function (transactions, cb) {
   var msg = []
   transactions.forEach(function (tx) {
     msg.push(tx.serialize())
@@ -165,16 +165,16 @@ EthWire.prototype.sendTransactions = function (transactions, cb) {
   this.send(OFFSETS.transactions, msg, cb)
 }
 
-EthWire.prototype.sendGetBlockHashes = function (startHash, max, cb) {
-  var msg = [startHash, ethUtil.intToBuffer(max)]
+VapWire.prototype.sendGetBlockHashes = function (startHash, max, cb) {
+  var msg = [startHash, vapUtil.intToBuffer(max)]
   this.send(OFFSETS.getBlockHashes, msg, cb)
 }
 
-// EthWire.prototype.sendBlockHashes = function(hashes, cb) {
+// VapWire.prototype.sendBlockHashes = function(hashes, cb) {
 //   this.send(OFFSETS.blockHashes, cb)
 // }
 
-EthWire.prototype.sendGetBlocks = function (hashes, cb) {
+VapWire.prototype.sendGetBlocks = function (hashes, cb) {
   hashes = hashes.slice()
   this.send(OFFSETS.getBlocks, hashes, cb)
 }
@@ -185,7 +185,7 @@ EthWire.prototype.sendGetBlocks = function (hashes, cb) {
  * @param {Array.<Block>} blocks
  * @param {Function} cb
  */
-EthWire.prototype.sendBlocks = function (blocks, cb) {
+VapWire.prototype.sendBlocks = function (blocks, cb) {
   var msg = []
 
   blocks.forEach(function (block) {
@@ -202,22 +202,22 @@ EthWire.prototype.sendBlocks = function (blocks, cb) {
  * @param {Number} td tottal difficulty
  * @param {Function} cb
  */
-EthWire.prototype.sendNewBlock = function (block, td, cb) {
+VapWire.prototype.sendNewBlock = function (block, td, cb) {
   var msg = [block.serialize(false), td]
   this.send(OFFSETS.newBlock, msg, cb)
 }
 
-EthWire.prototype.sendBlockHashesFromNumber = function (startNumber, maxNumber, cb) {
+VapWire.prototype.sendBlockHashesFromNumber = function (startNumber, maxNumber, cb) {
   var msg = [startNumber, maxNumber]
   this.send(OFFSETS.blockHashesFromNumber, msg, cb)
 }
 
-EthWire.prototype.fetchBlockHashes = function (startHash, max, cb) {
+VapWire.prototype.fetchBlockHashes = function (startHash, max, cb) {
   this.once('blockHashes', cb)
   this.sendGetBlockHashes(startHash, max)
 }
 
-EthWire.prototype.fetchBlocks = function (hashes, cb) {
+VapWire.prototype.fetchBlocks = function (hashes, cb) {
   this.once('blocks', cb)
   this.sendGetBlocks(hashes)
 }
